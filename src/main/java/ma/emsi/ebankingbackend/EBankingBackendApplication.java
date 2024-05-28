@@ -55,7 +55,7 @@ public class EBankingBackendApplication {
                 e.printStackTrace();
 
             }
-
+ 
 
         });
             List<BankAccountDTO> bankAccounts = bankAccountService.bankAccountList();

@@ -203,7 +203,7 @@ public class BankAccountServiceImp implements BankAccountService{
     public AccountHistoryDTO getAccountHistory(String accountId, int page, int size) throws BankAccountNotFoundException {
         BankAccount bankAccount= bankAccountRepository.findById(accountId).orElse(null);
         if(bankAccount==null) throw new BankAccountNotFoundException("not found  account");
-        Page<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountId(accountId, PageRequest.of(page, size));
+        Page<AccountOperation> accountOperations = accountOperationRepository.findByBankAccountIdOrderByOperationDateDesc(accountId, PageRequest.of(page, size));
         AccountHistoryDTO accountHistoryDTO=new AccountHistoryDTO();
         List<AccountOperationDTO> accountOperationDTOS = accountOperations.getContent().stream().map(op -> dtoMapper.fromAccountOperation(op)).collect(Collectors.toList());
         accountHistoryDTO.setAccountOperationDTOList(accountOperationDTOS);
@@ -214,6 +214,13 @@ public class BankAccountServiceImp implements BankAccountService{
         accountHistoryDTO.setTotalPages(accountOperations.getTotalPages());
 
         return  accountHistoryDTO;
+    }
+
+    @Override
+    public List<CustomerDTO> searchCustomers(String keyword) {
+        List<Customer> customers=customerRepository.findByNameContains(keyword);
+        List<CustomerDTO> customerDTOs = customers.stream().map(cust -> dtoMapper.fromCustomer(cust)).collect(Collectors.toList());
+          return customerDTOs;
     }
 
 }

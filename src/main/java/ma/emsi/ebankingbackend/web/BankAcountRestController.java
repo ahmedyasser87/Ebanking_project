@@ -1,15 +1,14 @@
 package ma.emsi.ebankingbackend.web;
 
 import ma.emsi.ebankingbackend.Exceptions.BankAccountNotFoundException;
-import ma.emsi.ebankingbackend.dtos.AccountHistoryDTO;
-import ma.emsi.ebankingbackend.dtos.AccountOperationDTO;
-import ma.emsi.ebankingbackend.dtos.BankAccountDTO;
+import ma.emsi.ebankingbackend.Exceptions.BanlanceNotSufficientException;
+import ma.emsi.ebankingbackend.dtos.*;
 import ma.emsi.ebankingbackend.services.BankAccountService;
 import ma.emsi.ebankingbackend.services.BankService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin("*")
 @RestController
 
 public class BankAcountRestController {
@@ -35,10 +34,25 @@ public class BankAcountRestController {
         return bankAccountService.accountHistory(accountId);
     }
     @GetMapping("/accounts/{accountId}/pageOperations")
-    public AccountHistoryDTO getAccountHistory(@PathVariable String accountId, @RequestParam(name = "page",defaultValue = "0") int page , @RequestParam(name = "page",defaultValue = "5")int size) throws BankAccountNotFoundException {
+    public AccountHistoryDTO getAccountHistory(@PathVariable String accountId, @RequestParam(name = "page",defaultValue = "0") int page , @RequestParam(name = "size",defaultValue = "5")int size) throws BankAccountNotFoundException {
         return bankAccountService.getAccountHistory(accountId,page,size);
     }
+@PostMapping("/accounts/debit")
+public DebitDTO debit( @RequestBody DebitDTO debitDTO) throws BankAccountNotFoundException, BanlanceNotSufficientException {
+    this.bankAccountService.debit(debitDTO.getAccountID(),debitDTO.getAmount(),debitDTO.getDescription());
+   return debitDTO;
+    }
+    @PostMapping("/accounts/credit")
+    public CreditDTO credit(@RequestBody CreditDTO creditDTO) throws BankAccountNotFoundException, BanlanceNotSufficientException {
+        this.bankAccountService.credit(creditDTO.getAccountID(),creditDTO.getAmount(),creditDTO.getDescription());
+        return creditDTO;
+    }
+    @PostMapping("/accounts/transfer")
+    public void transfer(@RequestBody TransferRequestDTO transferRequestDTO) throws BankAccountNotFoundException, BanlanceNotSufficientException {
+        this.bankAccountService.transfer(transferRequestDTO.getAccountSource()
+                , transferRequestDTO.getAccountDestination(),
+                transferRequestDTO.getAmount());
 
-
+    }
 
 }

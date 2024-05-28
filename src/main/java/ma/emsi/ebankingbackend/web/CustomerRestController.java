@@ -9,10 +9,11 @@ import ma.emsi.ebankingbackend.services.BankAccountService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
+@CrossOrigin("*")
 @RestController
 @AllArgsConstructor
 @Slf4j
+
 
 
 public class CustomerRestController {
@@ -21,6 +22,12 @@ public class CustomerRestController {
     public List<CustomerDTO> customers()
     {
         return bankAccountService.listCustomers();
+
+    }
+    @GetMapping("/customers/search")
+    public List<CustomerDTO> searchCustomers(@RequestParam(name="keyword",defaultValue = "") String keyword)
+    {
+        return bankAccountService.searchCustomers(keyword);
 
     }
     @GetMapping("/customers/{id}")
@@ -42,7 +49,7 @@ public class CustomerRestController {
 
 
     }
-    @DeleteMapping("/customer/{id}")
+    @DeleteMapping("/customers/{id}")
     public void deleteCustomer(@PathVariable Long id )
     {
         bankAccountService.deleteCustomer(id);
